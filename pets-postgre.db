@@ -15,7 +15,7 @@ with open('pets_to_add.csv', 'rb') as f:
     dictReader = csv.DictReader(f, skipinitialspace=True)
     for new_pet in dictReader:
     # create a database request
-#         cur.execute("""INSERT INTO pets("shelter name", name, age, adopted, "breed name", "species name") VALUES (%(shelter name)s, %(name)s), %(age)s, %(adopted)s, %(breed name)s, %(species name)s """)
+        cur.execute(""" INSERT INTO pet("shelter name", name, age, adopted, "breed name", "species name") VALUES (%(shelter name)s, %(name)s, %(age)s, %(adopted)s, %(breed name)s, %(species name)s) """, new_pet)
     	print new_pet
 
 # Show results
