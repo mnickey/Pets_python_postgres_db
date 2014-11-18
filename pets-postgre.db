@@ -1,0 +1,22 @@
+import psycopg2
+import csv
+
+try:
+    conn = psycopg2.connect("dbname='pets' user='action' host='localhost'")
+#     print "I am connected to the database!"
+except:
+    print "I am unable to connect to the database"
+
+mydict = {}
+# Connect to the database
+cur = conn.cursor()
+with open('pets_to_add.csv', 'rb') as f:
+    # Create a CSV reader
+    dictReader = csv.DictReader(f, skipinitialspace=True)
+    for new_pet in dictReader:
+    # create a database request
+#         cur.execute("""INSERT INTO pets("shelter name", name, age, adopted, "breed name", "species name") VALUES (%(shelter name)s, %(name)s), %(age)s, %(adopted)s, %(breed name)s, %(species name)s """)
+    	print new_pet
+
+# Show results
+# rows = cur.fetchall()
