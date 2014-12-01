@@ -113,5 +113,5 @@ insert into person (first_name, last_name) values
 
 insert into shelter (name) values
     ('BCSPCA'),
-    ('ASPCA'),
-    ('NYCSPCA');
+    ('ASPCA');
+    
