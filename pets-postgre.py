@@ -1,5 +1,6 @@
 import psycopg2
 import csv
+from pprint import pprint as pp
 
 try:
     conn = psycopg2.connect("dbname='pets' user='action' host='localhost'")
@@ -14,37 +15,30 @@ results = {}
 cur = conn.cursor()
 with open('pets_to_add.csv', 'rb') as f:
     # Add missing fields as needed
-    cur.execute(""" INSERT INTO shelter(name) VALUES ('NYSPCA') """)
+    cur.execute(""" INSERT INTO shelter(name) VALUES ('NYCSPCA') """)
     conn.commit()
 
-#     # Create a CSV reader
+#   Create a CSV reader
     dictReader = csv.DictReader(f, skipinitialspace=True)
-#     for row in dictReader:
-#         for key, value in row.iteritems():
-#             results.setdefault(key, []).append(value)
-#         print results
+#   Populate results
     for new_pet in dictReader:
         for item in new_pet:
+            new_pet[item] = new_pet[item].title()
             if new_pet[item] is None or new_pet[item] is '':
                 new_pet[item] = "NULL"
-            if new_pet[item].isalpha():
-                new_pet[item] = new_pet[item].capitalize()
-            print new_pet[item],
 
         # create a database request
+        cur.execute("SELECT id FROM species WHERE name = %s", (new_pet["species_name"],))
+        mySpeciesID = (cur.fetchone()[0])
+        new_pet["species_id"] = mySpeciesID
+        new_pet["shelter_name"] = new_pet["shelter_name"].upper()
+        # print results from first request to check entries
+        # pp(new_pet)
+
+        # Show results & add values into database with FK's -- add the FK's in the order show in the cur.execute line.
         cur.execute(""" INSERT INTO pet("shelter_name", name, age, adopted, "breed_name", "species_name", shelter_id, breed_id, species_id)
         VALUES (%(shelter_name)s, %(name)s, %(age)s, %(adopted)s, %(breed_name)s, %(species_name)s,
         (SELECT id FROM shelter WHERE name=%(shelter_name)s),
-        (SELECT id FROM breed WHERE name=%(breed_name)s),
+        (SELECT id FROM breed WHERE name=%(breed_name)s and species_id=%(species_id)s),
         (SELECT id FROM species WHERE name=%(species_name)s))""", new_pet)
         conn.commit()
-#     	print new_pet
-
-# Show results
-# cur.fetchall()
-# look up how to insert a FK
-"""
-INSERT INTO pet (shelter_name) VALUES ( 'testing',     SELECT id from foo WHERE type='blue' )
-
-(select id from species where name=%(species_name)s)
-"""
